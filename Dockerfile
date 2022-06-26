@@ -8,4 +8,4 @@ ADD . ./
 RUN pnpm install -r --offline --prod
 RUN pnpm build
 
-CMD ["node", "server.js"]
+CMD ["pnpm", "lab"]
