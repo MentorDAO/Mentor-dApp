@@ -19,7 +19,10 @@ const DaoPage = () => {
   const [desc, setDesc] = useState('')
   const [level, setLevel] = useState('')
   const contractAddress = '0x402D30e7Dba9BE455203A9d02bAB122bc5F59549';
-
+  console.log(title)
+  console.log(desc)
+  console.log(level)
+  
   async function saveDao(hash) {
     /* anchor post to smart contract */
     if (typeof window.ethereum !== 'undefined') {
