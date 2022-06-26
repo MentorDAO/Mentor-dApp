@@ -71,7 +71,8 @@ const DaoPage = () => {
         const valist = await createValist(provider, { wallet, metaTx: true });
         const accountID = valist.generateID(137, 'acme-co');
         const projectID = valist.generateID(accountID, 'go-binary')
-        setProjectId("projectID")      
+        setProjectId("projectID")     
+        return valist; 
     } catch (err) {
       console.log(err)
     }
@@ -82,17 +83,17 @@ const DaoPage = () => {
     e.preventDefault()
     /* saves post to ipfs then anchors to smart contract */
     if (!title || !desc) return
-    //await setProject();
+    const valistObj = await setProject();
     const hash = await saveDaoToIpfs()
     await saveDao(hash)
-    await license()
+    await license(valistObj)
     const response = await offersGetCov(contractAddress)
     console.log("response")
     console.log(response)
     // router.push(`/`)
   }
 
-  async function license(){
+  async function license(valist){
     try {
         const releaseID = await valist.getLatestReleaseID(projectID)
     
@@ -153,6 +154,7 @@ const DaoPage = () => {
     <Admin meta={<Meta title="Start DAO" description="MentorDAO" />}>
       <h3 className="text-2xl font-bold">Start a micro DAO</h3>
       <hr className="my-6 opacity-80" />
+      {message && (<h1 className="green">{message}</h1>)}
       <form className="flex flex-col">
         <div className="flex flex-col">
           <label htmlFor='title'>Title</label>
@@ -180,7 +182,6 @@ const DaoPage = () => {
         Submit
       </button>
       </form>
-      {message && (<h2>{message}</h2>)}
     </Admin>
   )
 };
