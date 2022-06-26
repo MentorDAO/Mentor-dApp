@@ -16,7 +16,7 @@ const data = [
     level: 'advanced'
   },
   {
-    name: 'One',
+    name: 'Three',
     id: '3334',
     level: 'pro'
   }
@@ -27,7 +27,7 @@ const AdminPage = () => {
 
   return (
     <Admin meta={<Meta title="Admin" description="MentorDAO Admin" />}>
-      <h3 className="text-2xl font-bold">Your DAOs</h3>
+      <h3 className="text-2xl font-bold">Join mDAO</h3>
       <hr className="my-6 opacity-50" />
       <ProjectsList data={data} />
     </Admin>
