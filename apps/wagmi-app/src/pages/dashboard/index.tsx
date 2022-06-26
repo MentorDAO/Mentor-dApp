@@ -250,14 +250,11 @@ const AdminPage = () => {
   async function appyToDAO(e) {   
     e.preventDefault()
     console.log("dao apply")
-
-    const hash = await saveToIpfs(newProject)
-    await saveProject(hash)
   }
 
   return (
     <Admin meta={<Meta title="Admin" description="MentorDAO Admin" />}>
-      <h3 className="text-2xl font-bold text-yellow-800">Your mDAOs</h3>
+      <h3 className="text-2xl font-bold text-gray-800">Your mDAOs</h3>
       <hr className="my-2 opacity-50" />
       <button
         className="btn-blue active:bg-blue-500 
