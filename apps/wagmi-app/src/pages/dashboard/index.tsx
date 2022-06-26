@@ -22,17 +22,6 @@ const data = [
   }
 ];
 
-const retrieveFile = (e) => {
-  const data = e.target.files[0];
-  const reader = new window.FileReader();
-  reader.readAsArrayBuffer(data);
-  reader.onloadend = () => {
-    console.log("Buffer data: ", Buffer(reader.result));
-  }
-
-  e.preventDefault();  
-}
-
 const AdminPage = () => {
   const [file, setFile] = useState(null);
 
