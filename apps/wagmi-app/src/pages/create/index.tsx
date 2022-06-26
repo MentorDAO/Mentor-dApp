@@ -3,14 +3,6 @@ import  React from 'react';
 import { useState } from 'react';
 import { Admin } from "@/templates/Admin";
 import { Meta } from "@/templates/Meta";
-import {
-  FormControl,
-  FormLabel,
-  Button,
-  Input,
-  Select,
-  Textarea,
-} from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import abiHub from '../../../../../contracts/abi/hub.json'
 
@@ -22,7 +14,7 @@ const DaoPage = () => {
   console.log(title)
   console.log(desc)
   console.log(level)
-  
+
   async function saveDao(hash) {
     /* anchor post to smart contract */
     if (typeof window.ethereum !== 'undefined') {
@@ -49,23 +41,18 @@ const DaoPage = () => {
     <Admin meta={<Meta title="Start DAO" description="MentorDAO" />}>
       <h3 className="text-2xl font-bold">Start a micro DAO</h3>
       <hr className="my-6 opacity-80" />
-      <FormControl>
-        <FormLabel htmlFor='title'>Title</FormLabel>
-        <Input width='200' variant='outline' size='lg' className="my-3 opacity-80 py-1 px-1" onChange={(event) => setTitle(event.target.value)} id='title' type='title' />
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor='description'>Description</FormLabel>
-        <Textarea width='200' variant='outline' size='lg' className="my-3 opacity-80 py-1 px-1" onChange={(event) => setDesc(event.target.value)} id='description' type='description' />
-      </FormControl>
-      <FormControl>
-      <FormLabel htmlFor='country'>Level</FormLabel>
-      <Select width='200' size='lg' className="my-3 opacity-80 px-1 py-1" onChange={(event) => setLevel(event.target.value)} id='level' placeholder='Select level'>
+      <form>
+        <label htmlFor='title'>Title</label>
+        <input width='200' variant='outline' size='lg' className="my-3 opacity-80 py-1 px-1" onChange={(event) => setTitle(event.target.value)} id='title' type='title' />
+        <label htmlFor='description'>Description</label>
+        <textarea width='200' variant='outline' size='lg' className="my-3 opacity-80 py-1 px-1" onChange={(event) => setDesc(event.target.value)} id='description' type='description' />
+      <label htmlFor='country'>Level</label>
+      <select width='200' size='lg' className="my-3 opacity-80 px-1 py-1" onChange={(event) => setLevel(event.target.value)} id='level' placeholder='Select level'>
         <option>1</option>
         <option>2</option>
         <option>3</option>
-      </Select>
-      </FormControl>
-      <Button
+      </select>
+      <button
         colorScheme='blue'
         mt={4}
         onClick={(e) => createNewDAO()}
@@ -73,7 +60,8 @@ const DaoPage = () => {
         type="submit"
       >
         Submit
-      </Button>
+      </button>
+      </form>
     </Admin>
   )
 };
