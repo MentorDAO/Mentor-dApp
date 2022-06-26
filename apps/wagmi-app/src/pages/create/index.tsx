@@ -1,3 +1,4 @@
+// @ts-nocheck
 import  React from 'react';
 import { useState } from 'react';
 import { Admin } from "@/templates/Admin";
@@ -10,15 +11,34 @@ import {
   Select,
   Textarea,
 } from '@chakra-ui/react'
+import { ethers } from 'ethers'
 
 const DaoPage = () => {
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
   const [level, setLevel] = useState('')
+  const contractAddress = '0x402D30e7Dba9BE455203A9d02bAB122bc5F59549';
 
+  async function saveDao(hash) {
+    /* anchor post to smart contract */
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(contractAddress, abiHub, signer)
+      console.log('contract: ', contract)
+      try {
+        const val = await contract.teamDAOMake(title, hash)
+        /* optional - wait for transaction to be confirmed before rerouting */
+        /* await provider.waitForTransaction(val.hash) */
+        console.log('val: ', val)
+      } catch (err) {
+        console.log('Errorr: ', err)
+      }
+    }    
+  }
 
   async function createNewDAO() {   
-    console.log('create')
+    await saveDao("hash")
   }
 
   return (
