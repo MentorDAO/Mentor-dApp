@@ -9,6 +9,13 @@
     "packages/*"
   ],
   "pnpm": {
+    "packageExtensions": {
+      "node-hid": {
+        "dependencies": {
+          "node-gyp": "7"
+        }
+      }
+    },
     "peerDependencyRules": {
       "allowedVersions": {
         "react": "18.2.0",
