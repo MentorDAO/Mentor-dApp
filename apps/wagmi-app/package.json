@@ -35,7 +35,6 @@
     "react-hook-form": "^7.27.1",
     "react-modal-hook": "^3.0.0",
     "react-select": "^5.3.2",
-    "styled-components": "^5.3.5",
     "wagmi": "0.4.12"
   },
   "devDependencies": {
