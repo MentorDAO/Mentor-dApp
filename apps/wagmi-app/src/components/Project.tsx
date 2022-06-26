@@ -6,18 +6,12 @@ import logo from '../logo.jpg';
 
 const styleProject = classnames('w-54 my-2 mx-2 px-2 py-2 bg-white');
 
-type IProjectProps = {
-  item: any;
-  setSelectedProject: any;
-  isDash: boolean;
-};
-
 const Project = ({
   setModal,
   item,
   setSelectedProject = (id: string) => console.log(id),
   isDash
-} : IProjectProps ) => {
+} : any ) => {
 
   // business logic
   const onProjectClick = () => {
