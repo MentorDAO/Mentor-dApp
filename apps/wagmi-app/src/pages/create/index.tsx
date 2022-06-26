@@ -5,7 +5,6 @@ import { Admin } from "@/templates/Admin";
 import { Meta } from "@/templates/Meta";
 import { create } from "ipfs-http-client";
 import { ethers } from 'ethers'
-import abi from '../../../../../contracts/abi/dao.json'
 import abiHub from '../../../../../contracts/abi/hub.json'
 const createValist = require('@valist/sdk').create;
 import Web3HttpProvider from 'web3-providers-http';
@@ -31,14 +30,14 @@ const DaoPage = () => {
    * Fetch NFTs via COVALENT NFT API
    * https://www.covalenthq.com/docs/api/#/0/Class-A/Get-changes-in-token-holders-between-two-block-heights/lng=en
    */
-  async function offersGetCov(contractHash) {
+  async function offersGetCov(contractAddress) {
     // const chain = '137'; //Polygon
     // const chain = '80001'; //Mumbai
     // 69 Opt Kovan
     // let res = await
     fetch(
-      `https://api.covalenthq.com/v1/69/tokens/${contractHash}/nft_token_ids/?key=ckey_51d7a300b1364d36a1dc7fb14a5`,
-      // `https://api.covalenthq.com/v1/80001/tokens/${contractHash}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
+      `https://api.covalenthq.com/v1/137/tokens/${contractAddress}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
+      // `https://api.covalenthq.com/v1/80001/tokens/${contractAddress}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
       {
         method: "GET",
         headers: {
@@ -46,8 +45,12 @@ const DaoPage = () => {
         },
       },
     )
-      .then((response) => response.json())
       .then((response) => {
+        console.log(response)
+        return response.json()
+      })
+      .then((response) => {
+        console.log(response)
         console.warn("[TEST] covalenthq Contract's NFTs:", response?.data?.items);
         response?.data?.items ? setNFTs(response?.data?.items) : setNFTs([]);
         //Done Loading
@@ -66,14 +69,11 @@ const DaoPage = () => {
 
   async function createNewDAO(e) {   
     e.preventDefault()
-    /* saves post to ipfs then anchors to smart contract */
     if (!title || !desc) return
     const hash = await saveDaoToIpfs()
     await saveDao(hash)
     const response = await offersGetCov(contractAddress)
-    console.log("RESP")
     console.log(response)
-    // router.push(`/`)
   }
 
   async function license(valist){
@@ -98,6 +98,9 @@ const DaoPage = () => {
         const val = await contract.teamDAOMake(title, hash)
         console.log('val: ', val)
         setMessage('Created new mDAO!')
+        const response = await offersGetCov()
+        console.log("RESP")
+        console.log(response)
       } catch (err) {
         console.log('Errorr: ', err)
       }
@@ -128,20 +131,20 @@ const DaoPage = () => {
     <Admin meta={<Meta title="Start DAO" description="MentorDAO" />}>
       <h3 className="text-2xl font-bold">Start a micro DAO</h3>
       <hr className="my-6 opacity-80" />
-      {message && (<h1 className="green">{message}</h1>)}
+      {message && (<h1 className="text-lg font-bold text-blue-600 mb-2">{message}</h1>)}
       <form className="flex flex-col">
         <div className="flex flex-col">
           <label htmlFor='title'>Title</label>
-          <input className="my-3 opacity-80 py-1 px-1 w-64" onChange={(event) => setTitle(event.target.value)} id='title' type='title' />
+          <input className="my-3 opacity-80 py-1 px-1 w-96" onChange={(event) => setTitle(event.target.value)} id='title' type='title' />
         </div>
         <div className="flex flex-col">
         <label htmlFor='description'>Description</label>
-        <textarea className="my-3 opacity-80 py-1 px-1 w-64" onChange={(event) => setDesc(event.target.value)} id='description' type='description' />
+        <textarea className="my-3 opacity-80 py-1 px-1 w-96" onChange={(event) => setDesc(event.target.value)} id='description' type='description' />
         </div>
         <div>
         <div className="flex flex-col">
       <label htmlFor='country'>Level</label>
-      <select  className="my-3 opacity-80 px-1 py-1 w-64" onChange={(event) => setLevel(event.target.value)} id='level' placeholder='Select level'>
+      <select  className="my-3 opacity-80 px-1 py-1 w-96" onChange={(event) => setLevel(event.target.value)} id='level' placeholder='Select level'>
         <option>1</option>
         <option>2</option>
         <option>3</option>
@@ -150,7 +153,7 @@ const DaoPage = () => {
       </div>
       <button
         onClick={(e) => createNewDAO(e)}
-        className="btn-indigo btn-sm py-2 px-2 w-24"
+        className="btn-blue round mt-4 btn-sm py-2 px-2 w-24"
         type="submit"
       >
         Submit

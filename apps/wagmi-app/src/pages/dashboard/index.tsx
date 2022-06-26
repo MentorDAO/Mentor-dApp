@@ -276,7 +276,7 @@ const AdminPage = () => {
       <Modal showModal={showAddModal} setModal={setShowAddModal} title="Create a Project">
         {projectForm}
       </Modal>
-      <Modal showModal={showModal} setModal={setShowModal} title="Appy to a Project">
+      <Modal showModal={showModal} setModal={setShowModal} title="Bid on a Project">
         {applyForm}
       </Modal>
       <Modal showModal={showApproveModal} setModal={setShowApproveModal} title="Your mDAOs applications">

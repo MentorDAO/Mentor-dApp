@@ -24,7 +24,7 @@ const Project = ({
     <button onClick={() => setModal(true)} className="rounded btn-blue btn-sm py-1 px-2">Apply to the mDAO</button>
   )
   const buttonAddProject = (
-    <button onClick={() => setModal(true)} className="rounded btn-blue btn-sm py-1 px-2">Apply to a Project</button>
+    <button onClick={() => setModal(true)} className="rounded btn-blue btn-sm py-1 px-2">Bid on a Project</button>
   )
 
   const note = (label, text) => (
