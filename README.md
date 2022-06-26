@@ -1,11 +1,6 @@
-![banner](https://user-images.githubusercontent.com/3408362/174462135-3aaeefba-554a-40d7-bd58-f58bf20725cb.png)
+![banner](https://user-images.githubusercontent.com/20131841/175810666-031e4fe9-998f-450f-be04-e1da9583d0ab.png)
 
-# ⚡ Turbo ETH (Beta)
-
-![TS](https://badgen.net/badge/-/TypeScript?icon=typescript&label&labelColor=blue&color=555555)
-[![GPLv3 license](https://img.shields.io/badge/License-MIT-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
-
-Turbo ETH is an Ethereum dApp Build System; with a suite of tools to start building production ready dApps today.
+# ⚡ Mentor DAO (Beta)
 
 **Boilerplate:**
 
@@ -13,13 +8,6 @@ Turbo ETH is an Ethereum dApp Build System; with a suite of tools to start build
 - Smart Contract ([Hardhat](https://hardhat.org/) + [Foundry](https://getfoundry.sh/))
 - Zero-config TypeScript Modules: ([TSDX](https://tsdx.io/))
 
-The TurboETH build system uses [Turborepo](https://turborepo.org/) and pNPM; a high-performance build system and a fast, disk space efficient package manager.
-
-- Incremental builds
-- Content Aware Hashing
-- Remote Caching
-- Parallel execution
-- Task pipelines
 
 ### Installation & Usage
 
@@ -55,34 +43,6 @@ pnpm lab
 
 The fastest way to start hacking is to run the `lab` task pipeline: starts local blockchain, creates frontend development server and watches for `packages` files for changes.
 
-**Example:**
-
-```json
-{
-  "$schema": "https://turborepo.org/schema.json",
-  "baseBranch": "origin/main",
-  "pipeline": {
-    "chain": {
-      "dependsOn": ["^chain"],
-      "outputs": [""],
-      "inputs": ["contracts/**/*.sol"]
-    },
-    "watch": {
-      "dependsOn": ["^watch"],
-      "outputs": [""],
-    },
-    "dev": {
-      "dependsOn": ["^dev"],
-      "outputs": [""],
-    },
-    "lab": {
-      "dependsOn": ["^watch", "^chain", "@turbo-eth/demo-app#dev"],
-      "outputs": [""]
-    }
-  }
-}
-```
-
 ## Modules
 
 The monorepo includes 3 primary folders
@@ -98,4 +58,4 @@ The monorepo includes 3 primary folders
 - [TSDX](https://tsdx.io/)
 
 <hr />
-Copyright 2022 (Kames Geraghty)[https://kames.me]
+
