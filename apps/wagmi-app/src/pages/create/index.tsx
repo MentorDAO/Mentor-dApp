@@ -12,6 +12,7 @@ import {
   Textarea,
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
+import abiHub from '../../../../../contracts/abi/hub.json'
 
 const DaoPage = () => {
   const [title, setTitle] = useState('')
