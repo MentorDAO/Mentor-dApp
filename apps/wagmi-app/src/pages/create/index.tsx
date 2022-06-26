@@ -9,6 +9,7 @@ import abi from '../../../../../contracts/abi/dao.json'
 import abiHub from '../../../../../contracts/abi/hub.json'
 const createValist = require('@valist/sdk').create;
 import Web3HttpProvider from 'web3-providers-http';
+import { useSigner, useConnect, useContract } from 'wagmi'
 
 // @ts-ignore
 const client:any = create('https://ipfs.infura.io:5001/api/v0');
@@ -23,6 +24,8 @@ const DaoPage = () => {
   const [nfts, setNFTs] = useState(false)
   const contractAddress = '0x402D30e7Dba9BE455203A9d02bAB122bc5F59549';
   const [message, setMessage] = useState('');
+  const { activeConnector } = useConnect()
+  const { data: signer, isError } = useSigner()
 
   /**
    * Fetch NFTs via COVALENT NFT API
@@ -31,9 +34,10 @@ const DaoPage = () => {
   async function offersGetCov(contractHash) {
     // const chain = '137'; //Polygon
     // const chain = '80001'; //Mumbai
+    // 69 Opt Kovan
     // let res = await
     fetch(
-      `https://api.covalenthq.com/v1/137/tokens/${contractHash}/nft_token_ids/?key=ckey_51d7a300b1364d36a1dc7fb14a5`,
+      `https://api.covalenthq.com/v1/69/tokens/${contractHash}/nft_token_ids/?key=ckey_51d7a300b1364d36a1dc7fb14a5`,
       // `https://api.covalenthq.com/v1/80001/tokens/${contractHash}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
       {
         method: "GET",
@@ -60,25 +64,6 @@ const DaoPage = () => {
     // console.warn("[TEST] covalenthq Contract's NFTs:", res);
   }
 
-  async function setProject(){
-    try {
-        const web3 = new Web3HttpProvider("https://rpc.valist.io/polygon");
-  
-        const privateKey = ethers.Wallet.createRandom();
-        const wallet = new ethers.Wallet(privateKey);
-  
-        const provider = new ethers.providers.Web3Provider(web3);
-        const valist = await createValist(provider, { wallet, metaTx: true });
-        const accountID = valist.generateID(137, 'acme-co');
-        const projectID = valist.generateID(accountID, 'go-binary')
-        setProjectId("projectID")     
-        return valist; 
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  console.log({urlArr})
   async function createNewDAO(e) {   
     e.preventDefault()
     /* saves post to ipfs then anchors to smart contract */
@@ -86,7 +71,7 @@ const DaoPage = () => {
     const hash = await saveDaoToIpfs()
     await saveDao(hash)
     const response = await offersGetCov(contractAddress)
-    console.log("response")
+    console.log("RESP")
     console.log(response)
     // router.push(`/`)
   }
@@ -106,16 +91,11 @@ const DaoPage = () => {
   }
 
   async function saveDao(hash) {
-    /* anchor post to smart contract */
-    if (typeof window.ethereum !== 'undefined') {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner()
-      const contract = new ethers.Contract(contractAddress, abiHub, signer)
+    if (activeConnector) {
+      const contract = useContract(contractAddress, abiHub, signer)
       console.log('contract: ', contract)
       try {
         const val = await contract.teamDAOMake(title, hash)
-        /* optional - wait for transaction to be confirmed before rerouting */
-        /* await provider.waitForTransaction(val.hash) */
         console.log('val: ', val)
         setMessage('Created new mDAO!')
       } catch (err) {
@@ -126,8 +106,6 @@ const DaoPage = () => {
 
 
     async function saveDaoToIpfs() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner()
       const dao = {
         title,
         desc,
@@ -135,11 +113,9 @@ const DaoPage = () => {
         projectID,
       }
       
-      /* save post metadata to ipfs */
       try {
         const added = await client.add(JSON.stringify(dao))
         const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-        //const url = "12"
         setUrlArr(prev => [...prev, url]);    
         return added.path
       } catch (err) {

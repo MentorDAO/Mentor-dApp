@@ -13,11 +13,11 @@ type IMainProps = {
 };
 
 const Main = (props: IMainProps) => (
-  <div className="w-full  p-0 px-1  antialiased bg-gray-700 text-white">
+  <div className="w-full  p-0 px-1  antialiased  to-black text-white">
     {props.meta}
 
     <div className="flex flex-col  h-screen justify-between w-full bg-gradient-to-br  from-black via-gray-900 to-black text-white text-white">
-      <div className="flex items-center justify-between px-8 py-4 border-neutral-500 bg-gray-900 text-white">
+      <div className="flex items-center justify-between px-8 py-4 border-neutral-500 to-black text-white">
         <div className=" align-center flex items-center justify-between">
           <Image  width="90" height="90" src={logo} />
         </div>
@@ -30,7 +30,7 @@ const Main = (props: IMainProps) => (
         {props.children}
       </div>
 
-      <div className="py-8 text-center text-sm border-neutral-500 bg-gray-900 text-white font-mono">
+      <div className="py-8 text-center text-sm border-neutral-500 to-black0 text-white font-mono">
         <div className="flex items-center justify-center">
           <ul className="flex flex-wrap font-bold text-md">
             <li className="mr-6">

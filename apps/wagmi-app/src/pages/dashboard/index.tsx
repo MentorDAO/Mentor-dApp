@@ -1,16 +1,19 @@
 // @ts-nocheck
-import React from "react";
-import { useState } from "react";
+import React,  { useState }  from "react";
 import { Admin } from "@/templates/Admin";
 import { Meta } from "@/templates/Meta";
 import ProjectsList from '@/components/ProjectList';
-import abi from '../../../../../contracts/abi/dao.json'
+import abiHub from '../../../../../contracts/abi/hub.json'
 const createValist = require('@valist/sdk').create;
 import Web3HttpProvider from 'web3-providers-http';
 import { create } from "ipfs-http-client";
+import { useSigner, useConnect, useContract } from 'wagmi'
+import Modal from '@/components/Modal';
+import { ethers } from 'ethers'
 
 // @ts-ignore
 const client:any = create('https://ipfs.infura.io:5001/api/v0');
+const contractAddress = '0x402D30e7Dba9BE455203A9d02bAB122bc5F59549';
 
 
 const data = [
@@ -42,7 +45,67 @@ const AdminPage = () => {
   const [projectId, setProjectId] = useState('')
   const [projectMeta, setProjMeta] = useState('')
   const [lis, setLis] = useState('');
-  
+  const { activeConnector } = useConnect()
+  const { data: signer, isError, isLoading } = useSigner()
+  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState('');
+  const [newProject, setNewProject] = useState({});
+  const [valisMets, setValisMeta] = useState('');
+
+  // TODO:
+  const applyForm = (
+    <form className="bg-gray-200 shadow-md rounded px-8 pt-6 pb-8 w-full">
+    <label className="block text-black text-sm font-bold mb-1">
+      Project Title
+    </label>
+    <input className="shadow appearance-none border rounded w-full py-2 px-1 text-black" />
+    <label className="block text-black text-sm font-bold mb-1">
+      Why do you want to apply?
+    </label>
+    <textarea className="shadow appearance-none border rounded w-full py-2 px-1 text-black" />
+    <button
+      className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+      type="button"
+      onClick={() => setShowAddModal(false)}
+    >
+      Submit
+    </button>
+  </form>
+  )
+  const projectForm = (
+    <>
+    <h4>{message && message}</h4>
+    {message && (<button onClick={license}>License with Valist</button>)}
+
+    <form className="bg-gray-200 shadow-md rounded px-8 pt-6 pb-8 w-full">
+    <label className="block text-black text-sm font-bold mb-1">
+      Project Title
+    </label>
+    <input onChange={(e)=> setNewProject({...newProject, title: e.target.value})} className="shadow appearance-none border rounded w-full py-2 px-1 text-black" />
+    <label className="block text-black text-sm font-bold mb-1">
+      Description
+    </label>
+    <textarea onChange={(e)=> setNewProject({...newProject, desc: e.target.value})}  className="shadow appearance-none border rounded w-full py-2 px-1 text-black" />
+    <label className="block text-black text-sm font-bold mb-1">
+      Royalty
+    </label>
+    <input onChange={(e)=> setNewProject({...newProject, royalty: e.target.value})} className="shadow appearance-none border rounded w-full py-2 px-1 text-black" />
+    <label className="block text-black text-sm font-bold mb-1">
+      Bounty
+    </label>
+    <input onChange={(e)=> setNewProject({...newProject, bounty: e.target.value})} className="shadow appearance-none border rounded w-full py-2 px-1 text-black" />
+    <button
+      className="text-white mt-3 bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+      type="submit"
+      onClick={createNewProject}
+    >
+      Submit
+    </button>
+  </form>
+  </>
+  )
+
   async function setProject(){
     try {
         const web3 = new Web3HttpProvider("https://rpc.valist.io/polygon");
@@ -62,10 +125,7 @@ const AdminPage = () => {
   }
 
   async function saveProject(hash) {
-    /* anchor post to smart contract */
-    if (typeof window.ethereum !== 'undefined') {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner()
+    if (activeConnector) {
       const contract = new ethers.Contract(contractAddress, abiHub, signer)
       console.log('contract: ', contract)
 
@@ -83,39 +143,27 @@ const AdminPage = () => {
     }    
   }
 
-  async function license(valist){
+  async function license(){
     try {
-        const releaseID = await valist.getLatestReleaseID(projectID)
+        const releaseID = await lis?.getLatestReleaseID(projectID)
     
-        const projectMeta = await valist.getProjectMeta(projectID);
-        const latestRelease = await valist.getReleaseMeta(releaseID);
-    
-        console.log(projectMeta);
+        const projectMeta = await lis?.getProjectMeta(projectID);
+        const latestRelease = await lis?.getReleaseMeta(releaseID);
+        setValisMeta(projectMeta)
+        console.log({projectMeta});
         console.log(latestRelease);
     } catch (err) {
       console.log(err)
     }
   }
 
-  async function saveDaoToIpfs() {
+  async function saveToIpfs(data) {
     const lis = await setProject()
     setLis(lis)
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
-    const project = {
-      title,
-      desc,
-      level,
-      royalty,
-      bounty
-    }
-    
-    /* save post metadata to ipfs */
+
     try {
-      const added = await client.add(JSON.stringify(dao))
+      const added = await client.add(JSON.stringify(data))
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      //const url = "12"
-      setUrlArr(prev => [...prev, url]);    
       return added.path
     } catch (err) {
       console.log('error: ', err)
@@ -124,22 +172,40 @@ const AdminPage = () => {
 
   async function createNewProject(e) {   
     e.preventDefault()
-    /* saves post to ipfs then anchors to smart contract */
-    if (!title || !desc) return
-    const valistObj = await setProject();
-    const hash = await saveProjectToIpfs()
-    await saveProject(hash)
 
-    console.log("response")
-    console.log(response)
-    // router.push(`/`)
+    if (!newProject.title) return
+    await setProject();
+    const hash = await saveToIpfs(newProject)
+    await saveProject(hash)
   }
   
+  async function appyToDAO(e) {   
+    e.preventDefault()
+    console.log("dao apply")
+
+    const hash = await saveToIpfs(newProject)
+    await saveProject(hash)
+  }
+
   return (
     <Admin meta={<Meta title="Admin" description="MentorDAO Admin" />}>
-      <h3 className="text-2xl font-bold">Your mDAOs</h3>
-      <hr className="my-6 opacity-50" />
-      <ProjectsList data={data} isDash={true} />
+      <h3 className="text-2xl font-bold text-gray-800">Your mDAOs</h3>
+      <hr className="my-2 opacity-50" />
+      <button
+        className="btn-blue active:bg-blue-500 
+      font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-6"
+        type="button"
+        onClick={() => setShowAddModal(true)}
+      >
+        Create a Project
+      </button>
+      <ProjectsList setModal={setShowModal} setSelectedProject={setSelectedItem} data={data} isDash={true} />
+      <Modal showModal={showAddModal} setModal={setShowAddModal} title="Create a Project">
+        {projectForm}
+      </Modal>
+      <Modal showModal={showModal} setModal={setShowModal} title="Appy to a Project">
+        {applyForm}
+      </Modal>
     </Admin>
 )};
 

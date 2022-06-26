@@ -5,21 +5,20 @@
   import React, { useState } from 'react';
   import Project from './Project';
   
-  const ProjectsList = ({ data, isDash } : any) => {
-    const [selectedProjectId, setSelectedProject] = useState(null);
-    console.log(selectedProjectId)
+  const ProjectsList = ({ data, isDash, setSelectedProject, setModal } : any) => {
     return (
       <>
         <div className='flex'
-          style={{ justifyContent: 'center'}}
+          style={{ justifyContent: 'space-around'}}
           >
           {data.length &&
               data
-                .map((project:any, index:any) => (
+                .map((item:any, index:any) => (
                   <Project
                     isDash={isDash}
+                    setModal={setModal}
                     key={index}
-                    project={project}
+                    item={item}
                     setSelectedProject={setSelectedProject}
                   />
                 ))}

@@ -1,7 +1,6 @@
 import { Admin } from "@/templates/Admin";
 import { Meta } from "@/templates/Meta";
 import ProjectsList from '@/components/ProjectList';
-import ModalForm from '@/components/ModalForm';
 
 const data = [
   {
@@ -26,7 +25,6 @@ const AdminPage = () => {
     <Admin meta={<Meta title="DAOS" description="micro DAOs" />}>
       <h3 className="text-2xl font-bold">Join a mDAO</h3>
       <hr className="my-6 opacity-50" />
-      <ModalForm isOpen={true} />
       <ProjectsList data={data} />
     </Admin>
   )
