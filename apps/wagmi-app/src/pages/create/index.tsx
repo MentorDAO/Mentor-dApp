@@ -3,22 +3,112 @@ import  React from 'react';
 import { useState } from 'react';
 import { Admin } from "@/templates/Admin";
 import { Meta } from "@/templates/Meta";
+import { create } from "ipfs-http-client";
 import { ethers } from 'ethers'
+import abi from '../../../../../contracts/abi/dao.json'
 import abiHub from '../../../../../contracts/abi/hub.json'
+const createValist = require('@valist/sdk').create;
+import Web3HttpProvider from 'web3-providers-http';
+
+// @ts-ignore
+const client:any = create('https://ipfs.infura.io:5001/api/v0');
 
 const DaoPage = () => {
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
   const [level, setLevel] = useState('')
+  const [urlArr, setUrlArr] = useState([]);
+  const [projectID, setProjectId] = useState("123")
+  const [isLoading, setIsLoading] = useState(false)
+  const [nfts, setNFTs] = useState(false)
   const contractAddress = '0x402D30e7Dba9BE455203A9d02bAB122bc5F59549';
-  console.log(title)
-  console.log(desc)
-  console.log(level)
+  const [message, setMessage] = useState('');
+
+  /**
+   * Fetch NFTs via COVALENT NFT API
+   * https://www.covalenthq.com/docs/api/#/0/Class-A/Get-changes-in-token-holders-between-two-block-heights/lng=en
+   */
+  async function offersGetCov(contractHash) {
+    // const chain = '137'; //Polygon
+    // const chain = '80001'; //Mumbai
+    // let res = await
+    fetch(
+      `https://api.covalenthq.com/v1/137/tokens/${contractHash}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
+      // `https://api.covalenthq.com/v1/80001/tokens/${contractHash}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        console.warn("[TEST] covalenthq Contract's NFTs:", response?.data?.items);
+        response?.data?.items ? setNFTs(response?.data?.items) : setNFTs([]);
+        //Done Loading
+        setIsLoading(false);
+        return response;
+      })
+      .catch((err) => {
+        console.error(err);
+        //Done Loading
+        setIsLoading(false);
+        //Has Error
+        setError(err);
+      });
+    // console.warn("[TEST] covalenthq Contract's NFTs:", res);
+  }
+
+  async function setProject(){
+    try {
+        const web3 = new Web3HttpProvider("https://rpc.valist.io/polygon");
+  
+        const privateKey = ethers.Wallet.createRandom();
+        const wallet = new ethers.Wallet(privateKey);
+  
+        const provider = new ethers.providers.Web3Provider(web3);
+        const valist = await createValist(provider, { wallet, metaTx: true });
+        const accountID = valist.generateID(137, 'acme-co');
+        const projectID = valist.generateID(accountID, 'go-binary')
+        setProjectId("projectID")      
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  console.log({urlArr})
+  async function createNewDAO(e) {   
+    e.preventDefault()
+    /* saves post to ipfs then anchors to smart contract */
+    if (!title || !desc) return
+    //await setProject();
+    const hash = await saveDaoToIpfs()
+    await saveDao(hash)
+    await license()
+    const response = await offersGetCov(contractAddress)
+    console.log("response")
+    console.log(response)
+    // router.push(`/`)
+  }
+
+  async function license(){
+    try {
+        const releaseID = await valist.getLatestReleaseID(projectID)
+    
+        const projectMeta = await valist.getProjectMeta(projectID);
+        const latestRelease = await valist.getReleaseMeta(releaseID);
+    
+        console.log(projectMeta);
+        console.log(latestRelease);
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   async function saveDao(hash) {
     /* anchor post to smart contract */
     if (typeof window.ethereum !== 'undefined') {
-      console.log("here")
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       const contract = new ethers.Contract(contractAddress, abiHub, signer)
@@ -28,16 +118,36 @@ const DaoPage = () => {
         /* optional - wait for transaction to be confirmed before rerouting */
         /* await provider.waitForTransaction(val.hash) */
         console.log('val: ', val)
+        setMessage('Created new mDAO!')
       } catch (err) {
         console.log('Errorr: ', err)
       }
     }    
   }
 
-  async function createNewDAO(e) {  
-    e.preventDefault() 
-    await saveDao("hash")
-  }
+
+    async function saveDaoToIpfs() {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const dao = {
+        title,
+        desc,
+        level,
+        projectID,
+      }
+      
+      /* save post metadata to ipfs */
+      try {
+        const added = await client.add(JSON.stringify(dao))
+        const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+        //const url = "12"
+        setUrlArr(prev => [...prev, url]);    
+        return added.path
+      } catch (err) {
+        console.log('error: ', err)
+      }
+    }
+  
 
   return (
     <Admin meta={<Meta title="Start DAO" description="MentorDAO" />}>
@@ -70,8 +180,10 @@ const DaoPage = () => {
         Submit
       </button>
       </form>
+      {message && (<h2>{message}</h2>)}
     </Admin>
   )
 };
 
 export default DaoPage;
+
