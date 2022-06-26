@@ -26,12 +26,12 @@ export const MenuItemSidebar = ({
   const styleItem = classnames('items-center cursor-pointer px-3 py-0');
   const styleBase = classnames('flex items-center justify-between');
 
-  const styleLabel = classnames('text-baseline uppercases py-2 block', labelStyle, {
+  const styleLabel = classnames('text-baseline text-lg uppercases py-2 block', labelStyle, {
     'text-sky-500 hover:text-sky-600': isExactMatch,
     'text-blueGray-700 hover:text-blueGray-500': !isExactMatch,
   });
 
-  const styleIcon = classnames('mr-0 text-sms', iconStyle, {
+  const styleIcon = classnames('mr-0 text-lg', iconStyle, {
     'opacity-75': isExactMatch,
     'text-blueGray-300': !isExactMatch,
   });

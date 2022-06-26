@@ -7,11 +7,6 @@ import Modal from '@/components/Modal';
 
 const data = [
   {
-    name: 'WhitePaper',
-    id: '123',
-    level: 'begginer'
-  },
-  {
     name: 'Learner',
     id: '134423',
     level: 'advanced'
