@@ -18,6 +18,7 @@ const DaoPage = () => {
   async function saveDao(hash) {
     /* anchor post to smart contract */
     if (typeof window.ethereum !== 'undefined') {
+      console.log("here")
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       const contract = new ethers.Contract(contractAddress, abiHub, signer)
@@ -33,7 +34,8 @@ const DaoPage = () => {
     }    
   }
 
-  async function createNewDAO() {   
+  async function createNewDAO(e) {  
+    e.preventDefault() 
     await saveDao("hash")
   }
 
@@ -41,22 +43,28 @@ const DaoPage = () => {
     <Admin meta={<Meta title="Start DAO" description="MentorDAO" />}>
       <h3 className="text-2xl font-bold">Start a micro DAO</h3>
       <hr className="my-6 opacity-80" />
-      <form>
-        <label htmlFor='title'>Title</label>
-        <input width='200' variant='outline' size='lg' className="my-3 opacity-80 py-1 px-1" onChange={(event) => setTitle(event.target.value)} id='title' type='title' />
+      <form className="flex flex-col">
+        <div className="flex flex-col">
+          <label htmlFor='title'>Title</label>
+          <input className="my-3 opacity-80 py-1 px-1 w-64" onChange={(event) => setTitle(event.target.value)} id='title' type='title' />
+        </div>
+        <div className="flex flex-col">
         <label htmlFor='description'>Description</label>
-        <textarea width='200' variant='outline' size='lg' className="my-3 opacity-80 py-1 px-1" onChange={(event) => setDesc(event.target.value)} id='description' type='description' />
+        <textarea className="my-3 opacity-80 py-1 px-1 w-64" onChange={(event) => setDesc(event.target.value)} id='description' type='description' />
+        </div>
+        <div>
+        <div className="flex flex-col">
       <label htmlFor='country'>Level</label>
-      <select width='200' size='lg' className="my-3 opacity-80 px-1 py-1" onChange={(event) => setLevel(event.target.value)} id='level' placeholder='Select level'>
+      <select  className="my-3 opacity-80 px-1 py-1 w-64" onChange={(event) => setLevel(event.target.value)} id='level' placeholder='Select level'>
         <option>1</option>
         <option>2</option>
         <option>3</option>
       </select>
+      </div>
+      </div>
       <button
-        colorScheme='blue'
-        mt={4}
-        onClick={(e) => createNewDAO()}
-        className="btn-indigo btn-sm py-2 px-2"
+        onClick={(e) => createNewDAO(e)}
+        className="btn-indigo btn-sm py-2 px-2 w-24"
         type="submit"
       >
         Submit
