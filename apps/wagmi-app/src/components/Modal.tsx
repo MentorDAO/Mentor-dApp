@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const Modal = ({setModal, showModal, title, children} : any) => {
   return (
     <>

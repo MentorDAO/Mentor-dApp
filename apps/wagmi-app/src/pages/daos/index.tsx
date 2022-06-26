@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React,  { useState }  from "react"
 import { Admin } from "@/templates/Admin";
 import { Meta } from "@/templates/Meta";
