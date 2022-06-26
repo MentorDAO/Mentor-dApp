@@ -92,7 +92,7 @@ const DaoPage = () => {
 
   async function saveDao(hash) {
     if (activeConnector) {
-      const contract = useContract(contractAddress, abiHub, signer)
+      const contract = new ethers.Contract(contractAddress, abiHub, signer)
       console.log('contract: ', contract)
       try {
         const val = await contract.teamDAOMake(title, hash)
