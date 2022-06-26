@@ -33,7 +33,7 @@ const DaoPage = () => {
     // const chain = '80001'; //Mumbai
     // let res = await
     fetch(
-      `https://api.covalenthq.com/v1/137/tokens/${contractHash}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
+      `https://api.covalenthq.com/v1/137/tokens/${contractHash}/nft_token_ids/?key=ckey_51d7a300b1364d36a1dc7fb14a5`,
       // `https://api.covalenthq.com/v1/80001/tokens/${contractHash}/nft_token_ids/?key=ckey_3cf63e4335e74f97a35b9f16bb1`,
       {
         method: "GET",
@@ -83,10 +83,8 @@ const DaoPage = () => {
     e.preventDefault()
     /* saves post to ipfs then anchors to smart contract */
     if (!title || !desc) return
-    const valistObj = await setProject();
     const hash = await saveDaoToIpfs()
     await saveDao(hash)
-    await license(valistObj)
     const response = await offersGetCov(contractAddress)
     console.log("response")
     console.log(response)
